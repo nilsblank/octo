@@ -17,6 +17,7 @@ from octo.data.utils.data_utils import (
     normalize_action_and_proprio,
     pprint_data_mixture,
     sample_match_keys_uniform,
+    sample_match_keys_weighted,
     tree_map,
 )
 from octo.utils.spec import ModuleSpec
@@ -360,7 +361,7 @@ def make_dataset_from_rlds(
         # extracts `language_key` into the "task" dict, or samples uniformly if `language_key` fnmatches multiple keys
         task = {}
         if language_key is not None:
-            task["language_instruction"] = sample_match_keys_uniform(traj, language_key)
+            task["language_instruction"] = sample_match_keys_weighted(traj, language_key)
             if task["language_instruction"].dtype != tf.string:
                 raise ValueError(
                     f"Language key {language_key} has dtype {task['language_instruction'].dtype}, "

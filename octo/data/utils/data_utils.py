@@ -72,6 +72,7 @@ def to_padding(tensor: tf.Tensor) -> tf.Tensor:
 
 
 def sample_match_keys_uniform(d: dict, key_template: str):
+
     """Samples uniformly from all keys fnmatching the template."""
     match_keys = [key for key in d.keys() if fnmatch(key, key_template)]
     if not match_keys:
@@ -81,6 +82,21 @@ def sample_match_keys_uniform(d: dict, key_template: str):
         stacked = tf.stack([d[key] for key in match_keys])
         idx = tf.random.uniform((), 0, len(stacked) - 1, dtype=tf.int32)
         return stacked[idx]
+    else:
+        return d[match_keys[0]]
+
+def sample_match_keys_weighted(d: dict, key_template: str):
+    """Samples from keys fnmatching the template with weights."""
+    match_keys = [key for key in d.keys() if fnmatch(key, key_template)]
+    if not match_keys:
+        raise ValueError(f"No matching key found for {key_template}. Keys: {d.keys()}")
+
+    len_keys = len(match_keys)
+    weights = [0.7,0.2,0.1]
+    logging.info(f"Sampling weighted across keys: {match_keys}")
+    if len(match_keys) > 1:
+        idx = tf.random.categorical(tf.math.log([weights]), 1)[0, 0]
+        return d[match_keys[idx]]
     else:
         return d[match_keys[0]]
 
