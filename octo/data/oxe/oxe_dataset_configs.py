@@ -26,6 +26,10 @@ class ProprioEncoding(IntEnum):
     POS_NAV = 5  # XY + yaw
 
 
+
+pnp_task_list_bridge  =  ["put", "pick", "take", "pnp", "icra", "rss", "many_skills", "lift_bowl", "move_drying", "wipe", "right_pepper", "topple", "upright", "flip"]
+
+
 class ActionEncoding(IntEnum):
     """Defines supported action encoding schemes for different datasets."""
 
@@ -59,6 +63,47 @@ OXE_DATASET_CONFIGS = {
         "proprio_encoding": ProprioEncoding.POS_EULER,
         "action_encoding": ActionEncoding.EEF_POS,
     },
+
+    "bridge_dataset_pnp_no_drawer_machine_fold_with_v1_NILS": {
+        "image_obs_keys": {"primary": "image_0", "secondary": "image_1", "wrist": None},
+        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
+        "proprio_encoding": ProprioEncoding.POS_EULER,
+        "action_encoding": ActionEncoding.EEF_POS,
+        "language_key": "language_instruction_NILS",
+        "filter_functions": (ModuleSpec.create(
+            filter_by_task,
+            task_templates=pnp_task_list_bridge,
+            negative_task_templates=["drawer", "machine", "fold"]))
+    },
+
+    "bridge_dataset_pnp_no_drawer_machine_fold_NILS": {
+        "image_obs_keys": {"primary": "image_0", "secondary": "image_1", "wrist": None},
+        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
+        "proprio_encoding": ProprioEncoding.POS_EULER,
+        "action_encoding": ActionEncoding.EEF_POS,
+        "language_key": "language_instruction_NILS",
+        "filter_functions": (ModuleSpec.create(
+            filter_by_task,
+            task_templates=pnp_task_list_bridge,
+            negative_task_templates=["drawer", "machine", "fold", "bridgev1"]))
+    },
+
+    "bridge_dataset_pnp_NILS": {
+        "image_obs_keys": {"primary": "image_0", "secondary": "image_1", "wrist": None},
+        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
+        "proprio_encoding": ProprioEncoding.POS_EULER,
+        "action_encoding": ActionEncoding.EEF_POS,
+        "language_key": "language_instruction_NILS",
+        "filter_functions": (ModuleSpec.create(
+            filter_by_task,
+            task_templates=pnp_task_list_bridge,
+            negative_task_templates=[]))
+    },
+
+
+
+
+
     "taco_play": {
         "image_obs_keys": {
             "primary": "rgb_static",

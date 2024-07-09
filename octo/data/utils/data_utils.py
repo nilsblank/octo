@@ -19,6 +19,30 @@ def tree_map(fn: Callable, tree: dict) -> dict:
     }
 
 
+def filter_by_language_key(traj, *, language_key_template):
+    match_keys = [key for key in traj.keys() if fnmatch(key, language_key_template)]
+    if len(match_keys) == 0:
+        raise ValueError(f"No matching key found for {language_key_template}. Keys: {traj.keys()}")
+
+    labels = tf.stack([traj[key] for key in match_keys], axis=0)
+    # if _any_ label in _any_ step is not empty, return True
+    return tf.math.reduce_any(labels != "")
+
+def filter_by_task(traj, *, task_templates,negative_task_templates):
+
+    metadata = traj["episode_metadata"]["file_path"]
+
+    pos_match = False
+    pos_match = tf.math.reduce_any([task_template in metadata for task_template in task_templates])
+    neg_match = False
+    neg_match = tf.math.reduce_any([task_template in metadata for task_template in negative_task_templates])
+    valid_traj = pos_match and not neg_match
+
+    return valid_traj
+
+
+
+
 def tree_merge(*trees: dict) -> dict:
     """Merges a list of nested dictionaries, with later dictionaries overriding earlier ones."""
     merged = {}
